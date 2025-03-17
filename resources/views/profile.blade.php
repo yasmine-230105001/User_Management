@@ -1,15 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-    @include('layouts.navbar')
-
     <div class="container mt-4">
         <h2>User Profile</h2>
         <p>Welcome, {{ auth()->user()->name }}!</p>
         <p>Email: {{ auth()->user()->email }}</p>
 
         <h4>Update Email</h4>
-        <form action="{{ route('profile.updateEmail') }}" method="POST">
+        <form method="POST" action="{{ route('profile.updateEmail') }}">
             @csrf
             @method('PUT')
 
@@ -22,7 +20,7 @@
         </form>
 
         <h4 class="mt-4">Update Password</h4>
-        <form action="{{ route('profile.updatePassword') }}" method="POST">
+        <form method="POST" action="{{ route('profile.updatePassword') }}">
             @csrf
             @method('PUT')
 

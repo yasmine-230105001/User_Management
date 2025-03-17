@@ -11,9 +11,23 @@ use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
-    public function index()
+    public function __construct()
     {
-        $users = User::all();
+        $this->middleware('auth');
+    }
+
+    public function index(Request $request)
+    {
+        $query = User::query();
+    
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+        }
+    
+        $users = $query->paginate(10);
+    
         return view('users.index', compact('users'));
     }
 
@@ -66,10 +80,11 @@ class UserController extends Controller
         $user->delete();
         return redirect()->route('users.index')->with('success', 'User deleted successfully!');
     }
-    public function profile(){
-    return view('profile');
-    }
 
+    public function profile()
+    {
+        return view('profile');
+    }
 
     public function updateEmail(Request $request)
     {
@@ -92,31 +107,15 @@ class UserController extends Controller
         }
     }
     
-    public function updatePassword(Request $request)
+    public function changePassword(Request $request, User $user)
     {
         $request->validate([
-            'current_password' => 'required',
             'new_password' => 'required|min:8|confirmed',
         ]);
     
-        $user = Auth::user();
-    
-        if (!$user) {
-            throw ValidationException::withMessages(['error' => 'User not found']);
-        }
-    
-        if (!Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'Current password is incorrect']);
-        }
-    
         $user->password = Hash::make($request->new_password);
+        $user->save();
     
-        if ($user->save()) {
-            return back()->with('success', 'Password updated successfully!');
-        } else {
-            return back()->withErrors(['error' => 'Failed to update password']);
-        }
+        return back()->with('success', 'Password changed successfully');
     }
-
-
 }

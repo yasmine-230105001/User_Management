@@ -14,6 +14,7 @@
         </div>
     @endif
 
+    {{-- Update User Form --}}
     <form action="{{ route('users.update', $user->id) }}" method="POST">
         @csrf
         @method('PUT')
@@ -27,5 +28,19 @@
         </div>
         <button type="submit" class="btn btn-warning">Update User</button>
     </form>
+
+    <hr>
+
+    {{-- Change Password Form --}}
+    <h3>Change Password</h3>
+    <form action="{{ route('users.changePassword', $user->id) }}" method="POST">
+    @csrf
+    @method('PUT')
+
+    <label for="new_password">New Password:</label>
+    <input type="password" name="new_password" required>
+
+    <button type="submit">Change Password</button>
+</form>
 </div>
 @endsection
